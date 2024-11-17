@@ -13,6 +13,7 @@ import { CustomerModule } from 'src/modules/customer/customer.module';
 import appConfig from './configs/app.config';
 import databaseConfigProd from './configs/database-prod.config';
 import databaseConfig from './configs/database.config';
+import { ServiceModule } from './modules/service/service.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -25,6 +26,7 @@ import databaseConfig from './configs/database.config';
     AuthModule,
     UserModule,
     CustomerModule,
+    ServiceModule,
   ],
   controllers: [AppController],
   providers: [AppService],

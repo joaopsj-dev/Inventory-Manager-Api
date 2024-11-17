@@ -32,10 +32,10 @@ export class Service {
   Value: number;
 
   @Column('float')
-  RemainingValue: number;
+  remainingValue: number;
 
   @Column('boolean', { default: false })
-  IsPaid: boolean;
+  isPaid: boolean;
 
   @Column('float', { nullable: true })
   advanceValue: number;

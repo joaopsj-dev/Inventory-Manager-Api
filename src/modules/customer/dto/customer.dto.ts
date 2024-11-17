@@ -1,7 +1,7 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 
 import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
-import { ServiceResponseDto } from 'src/modules/service/service.dto';
+import { ServiceResponseDto } from '@/modules/service/dto/service.dto';
 
 @Exclude()
 export class CustomerBaseDto {
