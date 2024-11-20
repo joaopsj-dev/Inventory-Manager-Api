@@ -77,7 +77,7 @@ export class AuthController {
 
   @HttpCode(HttpStatus.OK)
   @UseGuards(RefreshTokenJwtAuthGuard)
-  @Get('/refresh_token')
+  @Get('/refresh-token')
   public async refreshToken(
     @AuthUser() user: User,
     @Res() response: FastifyReply,
