@@ -1,14 +1,12 @@
+import { LoginBodyDto, RegisterBodyDto } from '@/modules/auth/dto/auth.dto';
+import { User } from '@/modules/user/user.entity';
+import { UserService } from '@/modules/user/user.service';
 import {
   Injectable,
   ServiceUnavailableException,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
-
-import { User } from '../user/user.entity';
-import { UserService } from '../user/user.service';
-
-import { LoginBodyDto, RegisterBodyDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {

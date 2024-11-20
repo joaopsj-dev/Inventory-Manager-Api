@@ -1,7 +1,7 @@
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty, IsString, MinLength } from 'class-validator';
 
-import { UserResponseDto } from 'src/modules/user/dto/user.dto';
+import { UserResponseDto } from '@/modules/user/dto/user.dto';
 
 @Exclude()
 export class AuthResponseDto {

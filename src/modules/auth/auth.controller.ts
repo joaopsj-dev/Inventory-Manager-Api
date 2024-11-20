@@ -11,23 +11,20 @@ import {
 import { plainToClass } from 'class-transformer';
 import { FastifyReply } from 'fastify';
 
-import { User } from '../user/user.entity';
+import { JwtAuthGuard } from '@/guards/jwt-auth.guard';
+import { LocalAuthGuard } from '@/guards/local-auth.guard';
+import { RefreshTokenJwtAuthGuard } from '@/guards/refresh-token-jwt.guard';
 
-import { AuthService } from './auth.service';
+import { AuthUser } from '@/decorators/auth-user.decorator';
 
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { LocalAuthGuard } from 'src/guards/local-auth.guard';
-import { RefreshTokenJwtAuthGuard } from 'src/guards/refresh-token-jwt.guard';
-
-import { AuthUser } from 'src/decorators/auth-user.decorator';
-
+import { AuthService } from '@/modules/auth/auth.service';
+import { AuthResponseDto, RegisterBodyDto } from '@/modules/auth/dto/auth.dto';
+import { UserResponseDto } from '@/modules/user/dto/user.dto';
+import { User } from '@/modules/user/user.entity';
 import {
   setRefreshTokenToHttpOnlyCookie,
   terminateRefreshTokenHttpOnlyCookie,
-} from 'src/utils/response.util';
-
-import { UserResponseDto } from '../user/dto/user.dto';
-import { AuthResponseDto, RegisterBodyDto } from './dto/auth.dto';
+} from '@/utils/response.util';
 
 @Controller('auth')
 export class AuthController {
