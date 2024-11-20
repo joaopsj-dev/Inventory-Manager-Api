@@ -1,3 +1,6 @@
+import { Report } from '@/modules/report/report.entity';
+import { ReportService } from '@/modules/report/report.service';
+import { ReportType } from '@/types/enums/report-type.enum';
 import {
   Body,
   Controller,
@@ -9,9 +12,6 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import { ReportType } from 'src/types/enums/report-type.enum';
-import { Report } from './report.entity';
-import { ReportService } from './report.service';
 
 @Controller('reports')
 export class ReportController {

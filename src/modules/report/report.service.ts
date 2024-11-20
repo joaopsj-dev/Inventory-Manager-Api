@@ -1,7 +1,7 @@
+import { Report } from '@/modules/report/report.entity';
+import { ReportRepository } from '@/modules/report/report.repository';
+import { ReportType } from '@/types/enums/report-type.enum';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { ReportType } from 'src/types/enums/report-type.enum';
-import { Report } from './report.entity';
-import { ReportRepository } from './report.repository';
 
 @Injectable()
 export class ReportService {

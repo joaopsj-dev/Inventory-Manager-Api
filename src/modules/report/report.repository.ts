@@ -1,7 +1,7 @@
-import { ReportType } from 'src/types/enums/report-type.enum';
+import { Report } from '@/modules/report/report.entity';
+import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
+import { ReportType } from '@/types/enums/report-type.enum';
 import { EntityRepository, Repository } from 'typeorm';
-import { StockMovement } from '../stock-movement/stock-movement.entity';
-import { Report } from './report.entity';
 
 @EntityRepository(Report)
 export class ReportRepository extends Repository<Report> {

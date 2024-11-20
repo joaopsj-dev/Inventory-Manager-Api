@@ -1,4 +1,4 @@
-import { ReportType } from 'src/types/enums/report-type.enum';
+import { ReportType } from '@/types/enums/report-type.enum';
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm';
 
 @Entity()
