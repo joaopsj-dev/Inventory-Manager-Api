@@ -34,7 +34,7 @@ class Server {
     nestFastifyApplication.setGlobalPrefix('/api/v1');
 
     nestFastifyApplication.register(fastifyCookie, {
-      secret: 'MY_SUPER_SECRET_COOKIE',
+      secret: 'SECRET_COOKIE',
     });
 
     await nestFastifyApplication.listen(
