@@ -1,5 +1,6 @@
 import { JwtAuthGuard } from '@/guards/jwt-auth.guard';
 import {
+  IncrementProductStockDto,
   ProductCreateDto,
   ProductUpdateDto,
 } from '@/modules/product/dto/product.dto';
@@ -28,6 +29,15 @@ export class ProductController {
   @Get()
   public async getAllProducts(@Query('name') name?: string) {
     return await this.productService.findAll(name);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @UseGuards(JwtAuthGuard)
+  @Post('/increment-stock')
+  public async incrementProductStock(
+    @Body() incrementStockDto: IncrementProductStockDto,
+  ) {
+    return await this.productService.incrementStock(incrementStockDto);
   }
 
   @HttpCode(HttpStatus.OK)

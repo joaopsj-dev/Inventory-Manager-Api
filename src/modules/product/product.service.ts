@@ -1,4 +1,5 @@
 import {
+  IncrementProductStockDto,
   ProductCreateDto,
   ProductFindAllDto,
   ProductFindOneDto,
@@ -38,6 +39,14 @@ export class ProductService {
     }
 
     return await this.productRepository.updateProduct(id, product);
+  }
+
+  async incrementStock(
+    incrementProductStockDto: IncrementProductStockDto,
+  ): Promise<Product> {
+    return await this.productRepository.incrementProductStock(
+      incrementProductStockDto,
+    );
   }
 
   async delete(id: string): Promise<void> {
