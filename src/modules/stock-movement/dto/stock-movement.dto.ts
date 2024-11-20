@@ -30,11 +30,11 @@ export class StockMovementCreateDto {
   quantity: number;
 
   @IsNotEmpty()
-  movementType: StockMovementType;
-
-  @IsOptional()
   @IsNumber()
-  negotiatedValue?: number;
+  price: number;
+
+  @IsNotEmpty()
+  movementType: StockMovementType;
 }
 
 export class StockMovementUpdateDto {
