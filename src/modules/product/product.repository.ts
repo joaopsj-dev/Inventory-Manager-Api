@@ -9,6 +9,7 @@ import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(Product)
 export class ProductRepository extends Repository<Product> {
+  //TODO: ao criar um produto, deve-se criar um registro na tabela stock-movement com a entrada desse peoduto no estoque.
   async createProduct(product: ProductCreateDto): Promise<Product> {
     const newProduct = this.create(product);
     return await this.save(newProduct);
