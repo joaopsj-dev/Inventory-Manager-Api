@@ -1,6 +1,6 @@
-import { Product } from 'src/modules/product/product.entity';
-import { Service } from 'src/modules/service/service.entity';
-import { StockMovementType } from 'src/types/enums/stock-movement-type.enum';
+import { Product } from '@/modules/product/product.entity';
+import { Service } from '@/modules/service/service.entity';
+import { StockMovementType } from '@/types/enums/stock-movement-type.enum';
 import {
   Column,
   Entity,

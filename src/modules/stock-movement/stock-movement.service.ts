@@ -1,12 +1,12 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
 import {
   StockMovementCreateDto,
   StockMovementFindAllDto,
   StockMovementQueryDto,
   StockMovementUpdateDto,
-} from './dto/stock-movement.dto';
-import { StockMovement } from './stock-movement.entity';
-import { StockMovementRepository } from './stock-movement.repository';
+} from '@/modules/stock-movement/dto/stock-movement.dto';
+import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
+import { StockMovementRepository } from '@/modules/stock-movement/stock-movement.repository';
+import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class StockMovementService {

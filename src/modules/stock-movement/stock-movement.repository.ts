@@ -1,11 +1,11 @@
-import { StockMovementType } from 'src/types/enums/stock-movement-type.enum';
-import { EntityRepository, Repository } from 'typeorm';
-import { ProductRepository } from '../product/product.repository';
+import { ProductRepository } from '@/modules/product/product.repository';
 import {
   StockMovementCreateDto,
   StockMovementUpdateDto,
-} from './dto/stock-movement.dto';
-import { StockMovement } from './stock-movement.entity';
+} from '@/modules/stock-movement/dto/stock-movement.dto';
+import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
+import { StockMovementType } from '@/types/enums/stock-movement-type.enum';
+import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(StockMovement)
 export class StockMovementRepository extends Repository<StockMovement> {

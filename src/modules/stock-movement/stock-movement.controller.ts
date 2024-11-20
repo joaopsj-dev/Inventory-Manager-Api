@@ -1,4 +1,12 @@
 import {
+  StockMovementCreateDto,
+  StockMovementFindAllDto,
+  StockMovementQueryDto,
+  StockMovementUpdateDto,
+} from '@/modules/stock-movement/dto/stock-movement.dto';
+import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
+import { StockMovementService } from '@/modules/stock-movement/stock-movement.service';
+import {
   Body,
   Controller,
   Delete,
@@ -10,14 +18,6 @@ import {
   UsePipes,
   ValidationPipe,
 } from '@nestjs/common';
-import {
-  StockMovementCreateDto,
-  StockMovementFindAllDto,
-  StockMovementQueryDto,
-  StockMovementUpdateDto,
-} from './dto/stock-movement.dto';
-import { StockMovement } from './stock-movement.entity';
-import { StockMovementService } from './stock-movement.service';
 
 @Controller('stock-movements')
 export class StockMovementController {

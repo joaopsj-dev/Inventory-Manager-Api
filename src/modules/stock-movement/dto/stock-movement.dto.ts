@@ -1,6 +1,6 @@
+import { StockMovementType } from '@/types/enums/stock-movement-type.enum';
 import { Exclude, Expose } from 'class-transformer';
 import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
-import { StockMovementType } from 'src/types/enums/stock-movement-type.enum';
 
 @Exclude()
 export class StockMovementBaseDto {
