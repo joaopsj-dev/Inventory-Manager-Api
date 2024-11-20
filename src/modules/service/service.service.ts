@@ -1,13 +1,13 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { ServiceRepository } from './service.repository';
-import { Service } from './service.entity';
-import { ServiceStatus } from '@/types/enums/service-status.enum';
 import {
   ServiceCreateDto,
-  ServiceUpdateDto,
   ServiceFindAllDto,
-} from './dto/service.dto';
+  ServiceUpdateDto,
+} from '@/modules/service/dto/service.dto';
+import { Service } from '@/modules/service/service.entity';
+import { ServiceRepository } from '@/modules/service/service.repository';
+import { ServiceStatus } from '@/types/enums/service-status.enum';
+import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
 export class ServiceService {

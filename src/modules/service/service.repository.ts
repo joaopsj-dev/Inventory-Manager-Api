@@ -1,10 +1,11 @@
-import { EntityRepository, Repository, DeleteResult } from 'typeorm';
-import { Service } from './service.entity';
+import { DeleteResult, EntityRepository, Repository } from 'typeorm';
+
 import {
   ServiceCreateDto,
-  ServiceUpdateDto,
   ServiceFindAllDto,
-} from './dto/service.dto';
+  ServiceUpdateDto,
+} from '@/modules/service/dto/service.dto';
+import { Service } from '@/modules/service/service.entity';
 import { ServiceStatus } from '@/types/enums/service-status.enum';
 
 @EntityRepository(Service)

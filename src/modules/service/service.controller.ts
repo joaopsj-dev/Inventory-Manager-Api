@@ -1,11 +1,11 @@
-import { ServiceService } from './service.service';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
-import { ServiceStatus } from '@/types/enums/service-status.enum';
+import { JwtAuthGuard } from '@/guards/jwt-auth.guard';
 import {
   ServiceCreateDto,
-  ServiceUpdateDto,
   ServiceFindAllDto,
-} from './dto/service.dto';
+  ServiceUpdateDto,
+} from '@/modules/service/dto/service.dto';
+import { ServiceService } from '@/modules/service/service.service';
+import { ServiceStatus } from '@/types/enums/service-status.enum';
 import {
   Body,
   Controller,

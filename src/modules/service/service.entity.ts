@@ -1,6 +1,6 @@
-import { Customer } from 'src/modules/customer/customer.entity';
-import { User } from 'src/modules/user/user.entity';
-import { ServiceStatus } from 'src/types/enums/service-status.enum';
+import { Customer } from '@/modules/customer/customer.entity';
+import { User } from '@/modules/user/user.entity';
+import { ServiceStatus } from '@/types/enums/service-status.enum';
 import {
   Column,
   CreateDateColumn,
