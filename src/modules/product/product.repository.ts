@@ -5,14 +5,25 @@ import {
   ProductUpdateDto,
 } from '@/modules/product/dto/product.dto';
 import { Product } from '@/modules/product/product.entity';
+import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
+import { StockMovementType } from '@/types/enums/stock-movement-type.enum';
 import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(Product)
 export class ProductRepository extends Repository<Product> {
-  //TODO: ao criar um produto, deve-se criar um registro na tabela stock-movement com a entrada desse peoduto no estoque.
   async createProduct(product: ProductCreateDto): Promise<Product> {
     const newProduct = this.create(product);
-    return await this.save(newProduct);
+    const savedProduct = await this.save(newProduct);
+
+    const stockMovement = new StockMovement();
+    stockMovement.productId = savedProduct.id;
+    stockMovement.quantity = product.quantity;
+    stockMovement.movementType = StockMovementType.ENTRY;
+    stockMovement.date = new Date();
+
+    await this.manager.save(stockMovement);
+
+    return savedProduct;
   }
 
   async updateProduct(id: string, product: ProductUpdateDto): Promise<Product> {
