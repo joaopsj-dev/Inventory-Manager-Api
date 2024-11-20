@@ -29,6 +29,9 @@ export class StockMovement {
   @Column({ nullable: true })
   serviceId: string;
 
+  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  negotiatedValue: number;
+
   @ManyToOne(() => Product, (product) => product.stockMovements, {
     nullable: false,
   })

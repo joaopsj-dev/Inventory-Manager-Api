@@ -37,6 +37,7 @@ export class StockMovementService {
       product: stockMovement.product,
       service: stockMovement.service,
       serviceId: stockMovement.serviceId,
+      negotiatedValue: stockMovement.negotiatedValue, // Adicionando a nova propriedade
     }));
   }
 

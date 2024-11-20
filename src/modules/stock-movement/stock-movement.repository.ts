@@ -34,6 +34,7 @@ export class StockMovementRepository extends Repository<StockMovement> {
     const newStockMovement = this.create({
       ...stockMovement,
       movementType: StockMovementType.EXIT,
+      negotiatedValue: stockMovement.negotiatedValue,
     });
 
     return await this.save(newStockMovement);
@@ -43,7 +44,10 @@ export class StockMovementRepository extends Repository<StockMovement> {
     id: string,
     stockMovement: StockMovementUpdateDto,
   ): Promise<StockMovement> {
-    const updateStockMovement = this.create(stockMovement);
+    const updateStockMovement = this.create({
+      ...stockMovement,
+      negotiatedValue: stockMovement.negotiatedValue,
+    });
     await this.save({ ...updateStockMovement, id });
     return await this.findOne(id);
   }
@@ -81,6 +85,7 @@ export class StockMovementRepository extends Repository<StockMovement> {
       product: stockMovement.product,
       service: stockMovement.service,
       serviceId: stockMovement.serviceId,
+      negotiatedValue: stockMovement.negotiatedValue,
     }));
   }
 

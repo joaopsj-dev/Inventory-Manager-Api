@@ -15,6 +15,9 @@ export class StockMovementBaseDto {
 
   @Expose()
   readonly movementType: StockMovementType;
+
+  @Expose()
+  readonly negotiatedValue: number;
 }
 
 export class StockMovementCreateDto {
@@ -28,6 +31,10 @@ export class StockMovementCreateDto {
 
   @IsNotEmpty()
   movementType: StockMovementType;
+
+  @IsOptional()
+  @IsNumber()
+  negotiatedValue?: number;
 }
 
 export class StockMovementUpdateDto {
@@ -43,6 +50,10 @@ export class StockMovementUpdateDto {
 
   @IsOptional()
   movementType?: StockMovementType;
+
+  @IsOptional()
+  @IsNumber()
+  negotiatedValue?: number;
 }
 
 export class StockMovementFindAllDto extends StockMovementBaseDto {
