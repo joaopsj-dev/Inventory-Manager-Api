@@ -28,18 +28,12 @@ export class StockMovementRepository extends Repository<StockMovement> {
       throw new Error('Insufficient stock for the product');
     }
 
-    const totalValueBefore = product.quantity * product.price;
-    const totalValueAfter = totalValueBefore + stockMovement.price;
-    const newQuantity = product.quantity + stockMovement.quantity;
-    const newAveragePrice = totalValueAfter / newQuantity;
-
-    product.quantity = newQuantity;
-    product.price = newAveragePrice;
+    product.quantity -= stockMovement.quantity;
     await this.productRepository.save(product);
 
     const newStockMovement = this.create({
       ...stockMovement,
-      movementType: StockMovementType.ENTRY,
+      movementType: StockMovementType.EXIT,
       negotiatedValue: stockMovement.price,
     });
 

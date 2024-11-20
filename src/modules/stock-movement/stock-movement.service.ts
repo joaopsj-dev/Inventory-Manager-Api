@@ -1,3 +1,4 @@
+import { ProductRepository } from '@/modules/product/product.repository';
 import {
   StockMovementCreateDto,
   StockMovementFindAllDto,
@@ -6,16 +7,39 @@ import {
 } from '@/modules/stock-movement/dto/stock-movement.dto';
 import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
 import { StockMovementRepository } from '@/modules/stock-movement/stock-movement.repository';
+import { StockMovementType } from '@/types/enums/stock-movement-type.enum';
 import { Injectable, NotFoundException } from '@nestjs/common';
 
 @Injectable()
 export class StockMovementService {
-  constructor(private stockMovementRepository: StockMovementRepository) {}
+  constructor(
+    private stockMovementRepository: StockMovementRepository,
+    private productRepository: ProductRepository,
+  ) {}
 
   async create(stockMovement: StockMovementCreateDto): Promise<StockMovement> {
-    return await this.stockMovementRepository.createStockMovement(
-      stockMovement,
+    const product = await this.productRepository.findOne(
+      stockMovement.productId,
     );
+
+    if (!product) {
+      throw new NotFoundException('Product not found');
+    }
+
+    if (product.quantity < stockMovement.quantity) {
+      throw new Error('Insufficient stock for the product');
+    }
+
+    product.quantity -= stockMovement.quantity;
+    await this.productRepository.save(product);
+
+    const newStockMovement = this.stockMovementRepository.create({
+      ...stockMovement,
+      movementType: StockMovementType.EXIT,
+      negotiatedValue: stockMovement.price,
+    });
+
+    return await this.stockMovementRepository.save(newStockMovement);
   }
 
   async findAll(
