@@ -1,4 +1,4 @@
-import { Service } from 'src/modules/service/service.entity';
+import { Service } from '@/modules/service/service.entity';
 import {
   Column,
   CreateDateColumn,

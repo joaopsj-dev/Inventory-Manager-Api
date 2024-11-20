@@ -18,7 +18,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@/guards/jwt-auth.guard';
 
 @Controller('customer')
 export class CustomerController {
