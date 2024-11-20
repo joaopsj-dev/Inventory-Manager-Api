@@ -10,6 +10,7 @@ import { AppService } from './app.service';
 import { TypeOrmConfigService } from './services/typeorm-config.service';
 
 import { ProductModule } from '@/modules/product/product.module';
+import { StockMovementModule } from '@/modules/stock-movement/stock-movement.module';
 import { CustomerModule } from 'src/modules/customer/customer.module';
 import appConfig from './configs/app.config';
 import databaseConfigProd from './configs/database-prod.config';
@@ -29,6 +30,7 @@ import { ServiceModule } from './modules/service/service.module';
     CustomerModule,
     ServiceModule,
     ProductModule,
+    StockMovementModule,
   ],
   controllers: [AppController],
   providers: [AppService],
