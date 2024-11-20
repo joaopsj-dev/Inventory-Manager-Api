@@ -19,6 +19,7 @@ export class ProductRepository extends Repository<Product> {
     const stockMovement = new StockMovement();
     stockMovement.productId = savedProduct.id;
     stockMovement.quantity = product.quantity;
+    stockMovement.negotiatedValue = product.price;
     stockMovement.movementType = StockMovementType.ENTRY;
     stockMovement.date = new Date();
 
@@ -58,20 +59,26 @@ export class ProductRepository extends Repository<Product> {
   async incrementProductStock(
     incrementProductStockDto: IncrementProductStockDto,
   ): Promise<Product> {
-    const { id, quantity, purchaseDate } = incrementProductStockDto;
+    const { id, quantity, purchaseDate, price } = incrementProductStockDto;
     const product = await this.findOne(id);
 
     if (!product) {
       throw new Error('Product not found');
     }
 
-    product.quantity += quantity;
+    const totalQuantity = product.quantity + quantity;
+    const totalPrice = product.price * product.quantity + price * quantity;
+    const averagePrice = totalPrice / totalQuantity;
+
+    product.quantity = totalQuantity;
+    product.price = averagePrice;
     product.purchaseDate = purchaseDate;
     await this.save(product);
 
     const stockMovement = new StockMovement();
     stockMovement.productId = product.id;
     stockMovement.quantity = quantity;
+    stockMovement.negotiatedValue = price;
     stockMovement.movementType = StockMovementType.ENTRY;
     stockMovement.date = new Date();
 

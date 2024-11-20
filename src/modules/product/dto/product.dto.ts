@@ -115,5 +115,9 @@ export class IncrementProductStockDto {
   readonly quantity: number;
 
   @IsNotEmpty()
+  @IsNumber()
+  readonly price: number;
+
+  @IsNotEmpty()
   readonly purchaseDate: Date;
 }
