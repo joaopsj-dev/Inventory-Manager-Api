@@ -1,3 +1,4 @@
+import { JwtAuthGuard } from '@/guards/jwt-auth.guard';
 import {
   ProductCreateDto,
   ProductUpdateDto,
@@ -17,7 +18,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
 
 @Controller('product')
 export class ProductController {

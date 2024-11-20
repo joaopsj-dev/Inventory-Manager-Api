@@ -1,5 +1,5 @@
-import { StockMovement } from 'src/modules/stock-movement/stock-movement.entity';
-import { ProductUnit } from 'src/types/enums/product-unit-type.enum';
+import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
+import { ProductUnit } from '@/types/enums/product-unit-type.enum';
 import {
   Column,
   CreateDateColumn,
