@@ -1,4 +1,5 @@
 import {
+  IncrementProductStockDto,
   ProductCreateDto,
   ProductFindAllDto,
   ProductFindOneDto,
@@ -27,9 +28,56 @@ export class ProductRepository extends Repository<Product> {
   }
 
   async updateProduct(id: string, product: ProductUpdateDto): Promise<Product> {
-    const updateProduct = this.create(product);
-    await this.save({ ...updateProduct, id });
+    const existingProduct = await this.findOne(id);
+
+    if (!existingProduct) {
+      throw new Error('Product not found');
+    }
+
+    const updatedProduct = this.create(product);
+    await this.save({ ...updatedProduct, id });
+
+    if (product.price !== undefined || product.quantity !== undefined) {
+      const lastStockMovement = await this.manager.findOne(StockMovement, {
+        where: { productId: id },
+        order: { date: 'DESC' },
+      });
+
+      if (lastStockMovement) {
+        if (product.quantity !== undefined) {
+          lastStockMovement.quantity = product.quantity;
+        }
+        lastStockMovement.date = new Date();
+        await this.manager.save(lastStockMovement);
+      }
+    }
+
     return await this.findOne(id);
+  }
+
+  async incrementProductStock(
+    incrementProductStockDto: IncrementProductStockDto,
+  ): Promise<Product> {
+    const { id, quantity, purchaseDate } = incrementProductStockDto;
+    const product = await this.findOne(id);
+
+    if (!product) {
+      throw new Error('Product not found');
+    }
+
+    product.quantity += quantity;
+    product.purchaseDate = purchaseDate;
+    await this.save(product);
+
+    const stockMovement = new StockMovement();
+    stockMovement.productId = product.id;
+    stockMovement.quantity = quantity;
+    stockMovement.movementType = StockMovementType.ENTRY;
+    stockMovement.date = new Date();
+
+    await this.manager.save(stockMovement);
+
+    return product;
   }
 
   async findAllProducts(name?: string): Promise<ProductFindAllDto[]> {

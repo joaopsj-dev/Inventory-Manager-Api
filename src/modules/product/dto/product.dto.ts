@@ -104,3 +104,16 @@ export class ProductFindOneDto extends ProductBaseDto {
   @Expose()
   readonly stockMovements: any[];
 }
+
+export class IncrementProductStockDto {
+  @IsNotEmpty()
+  @IsString()
+  readonly id: string;
+
+  @IsNotEmpty()
+  @IsNumber()
+  readonly quantity: number;
+
+  @IsNotEmpty()
+  readonly purchaseDate: Date;
+}
