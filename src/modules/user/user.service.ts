@@ -1,13 +1,14 @@
 import {
+  UserCreateBodyDto,
+  UserUpdateBodyDto,
+} from '@/modules/user/dto/user.dto';
+import { User } from '@/modules/user/user.entity';
+import { UserRepository } from '@/modules/user/user.repository';
+import {
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
-
-import { User } from './user.entity';
-import { UserRepository } from './user.repository';
-
-import { UserCreateBodyDto, UserUpdateBodyDto } from './dto/user.dto';
 
 @Injectable()
 export class UserService {

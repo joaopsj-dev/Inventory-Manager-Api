@@ -1,6 +1,6 @@
+import { Service } from '@/modules/service/service.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import * as bcrypt from 'bcryptjs';
-import { Service } from 'src/modules/service/service.entity';
 import {
   BeforeInsert,
   BeforeUpdate,

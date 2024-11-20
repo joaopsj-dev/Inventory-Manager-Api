@@ -12,15 +12,15 @@ import {
 } from '@nestjs/common';
 import { plainToClass } from 'class-transformer';
 
-import { UserService } from './user.service';
+import { UserService } from '@/modules/user/user.service';
 
-import { JwtAuthGuard } from 'src/guards/jwt-auth.guard';
+import { JwtAuthGuard } from '@/guards/jwt-auth.guard';
 
 import {
   UserCreateBodyDto,
   UserResponseDto,
   UserUpdateBodyDto,
-} from './dto/user.dto';
+} from '@/modules/user/dto/user.dto';
 
 @Controller('users')
 export class UserController {
