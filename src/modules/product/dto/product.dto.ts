@@ -24,7 +24,8 @@ export class ProductBaseDto {
   readonly quantity: number;
 
   @Expose()
-  readonly details: string;
+  @IsOptional()
+  readonly details?: string;
 
   @Expose()
   @IsEnum(ProductUnit)

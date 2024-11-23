@@ -23,7 +23,7 @@ export class Product {
   @Column('int')
   quantity: number;
 
-  @Column()
+  @Column({ nullable: true })
   details: string;
 
   @Column({
