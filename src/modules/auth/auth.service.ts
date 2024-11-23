@@ -41,7 +41,7 @@ export class AuthService {
           sub: user.email,
         },
         {
-          expiresIn: '60s',
+          expiresIn: '10m',
           algorithm: 'HS512',
           issuer: 'Nest Advance JWT Authentication',
           audience: 'Authenicated Users',
