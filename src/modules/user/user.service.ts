@@ -24,7 +24,15 @@ export class UserService {
 
   public async findByUsernameOrFail(username: string): Promise<User> {
     try {
-      return await this.userRepository.findOne({ username });
+      return await this.userRepository.findOne({ where: { username } });
+    } catch (error) {
+      throw new NotFoundException(error.message);
+    }
+  }
+
+  public async findByEmailOrFail(email: string): Promise<User> {
+    try {
+      return await this.userRepository.findOne({ where: { email } });
     } catch (error) {
       throw new NotFoundException(error.message);
     }
@@ -39,11 +47,11 @@ export class UserService {
   }
 
   public async create(createBodyDto: UserCreateBodyDto): Promise<User> {
-    const exisitingUsername = await this.userRepository.findOne({
-      username: createBodyDto.username,
+    const existingEmail = await this.userRepository.findOne({
+      where: { email: createBodyDto.email },
     });
 
-    if (exisitingUsername) {
+    if (existingEmail) {
       throw new UnprocessableEntityException('User already exists');
     }
 

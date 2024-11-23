@@ -21,6 +21,9 @@ export class User {
   username: string;
 
   @Column()
+  email: string;
+
+  @Column()
   password: string;
 
   @UpdateDateColumn({ type: 'timestamp with time zone' })

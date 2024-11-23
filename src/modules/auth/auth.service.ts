@@ -21,15 +21,15 @@ export class AuthService {
 
   public async validateUser(loginBodyDto: LoginBodyDto): Promise<User> {
     try {
-      const user: User = await this.userService.findByUsernameOrFail(
-        loginBodyDto.username,
+      const user: User = await this.userService.findByEmailOrFail(
+        loginBodyDto.email,
       );
 
       await User.comparePassword(loginBodyDto.password, user);
 
       return user;
     } catch (error) {
-      throw new UnauthorizedException('Incorrect Username or Password');
+      throw new UnauthorizedException('Incorrect Email or Password');
     }
   }
 
@@ -38,7 +38,7 @@ export class AuthService {
       return await this.jwtService.signAsync(
         {
           id: user.id,
-          sub: user.username,
+          sub: user.email,
         },
         {
           expiresIn: '60s',
@@ -57,7 +57,7 @@ export class AuthService {
       return await this.jwtService.signAsync(
         {
           id: user.id,
-          sub: user.username,
+          sub: user.email,
         },
         {
           secret: 'MY_REFRESH_TOKEN_SUPER_SECRET_KEY',

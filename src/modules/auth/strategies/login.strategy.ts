@@ -10,15 +10,16 @@ import { User } from '@/modules/user/user.entity';
 export class LocalStrategy extends PassportStrategy(Strategy) {
   constructor(private authService: AuthService) {
     super({
-      usernameField: 'username',
+      usernameField: 'email',
       passwordField: 'password',
+      passReqToCallback: true,
     });
   }
 
-  async validate(username: string, password: string): Promise<User> {
+  async validate(req: Request, email: string, password: string): Promise<User> {
     const user = await this.authService.validateUser({
-      username,
       password,
+      email,
     } as LoginBodyDto);
 
     if (!user) {

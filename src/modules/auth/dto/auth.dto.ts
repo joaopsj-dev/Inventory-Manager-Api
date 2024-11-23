@@ -1,5 +1,5 @@
 import { Exclude, Expose } from 'class-transformer';
-import { IsNotEmpty, IsString, MinLength } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsString, MinLength } from 'class-validator';
 
 import { UserResponseDto } from '@/modules/user/dto/user.dto';
 
@@ -22,14 +22,18 @@ export class RegisterBodyDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @IsNotEmpty()
+  @IsEmail()
+  email: string;
 }
 
 export class LoginBodyDto {
   @IsNotEmpty()
   @IsString()
-  username: string;
-
-  @IsNotEmpty()
-  @IsString()
   password: string;
+
+  // @IsNotEmpty()
+  // @IsEmail()
+  email: string;
 }

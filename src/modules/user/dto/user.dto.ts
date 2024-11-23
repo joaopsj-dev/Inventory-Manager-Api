@@ -1,5 +1,6 @@
 import { Exclude, Expose } from 'class-transformer';
 import {
+  IsEmail,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -14,6 +15,9 @@ export class UserResponseDto {
 
   @Expose()
   readonly username: string;
+
+  @Expose()
+  readonly email: string;
 
   @Expose()
   readonly updatedAt: Date;
@@ -32,6 +36,10 @@ export class UserCreateBodyDto {
   @IsNotEmpty()
   @IsString()
   password: string;
+
+  @IsEmail()
+  @IsNotEmpty()
+  email: string;
 }
 
 export class UserUpdateBodyDto {
@@ -48,4 +56,8 @@ export class UserUpdateBodyDto {
   @IsNotEmpty()
   @IsString()
   password!: string;
+
+  @IsOptional()
+  @IsEmail()
+  email!: string;
 }
