@@ -13,6 +13,7 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Post,
   Put,
   Query,
   UseGuards,
@@ -45,6 +46,8 @@ export class CustomerController {
     );
   }
 
+  @HttpCode(HttpStatus.OK)
+  @Post()
   public async createCustomer(@Body() createBodyDto: CustomerCreateDto) {
     return await this.customerService.create(createBodyDto);
   }
