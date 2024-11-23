@@ -91,7 +91,7 @@ export class ProductRepository extends Repository<Product> {
     const query = this.createQueryBuilder('product');
 
     if (name) {
-      query.andWhere('product.name LIKE :name', { name: `%${name}%` });
+      query.andWhere('product.name ILIKE :name', { name: `%${name}%` });
     }
 
     const products = await query.getMany();
