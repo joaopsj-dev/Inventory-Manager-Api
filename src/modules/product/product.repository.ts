@@ -137,12 +137,15 @@ export class ProductRepository extends Repository<Product> {
   }
 
   async deleteProduct(id: string): Promise<void> {
-    const product = await this.findOne(id);
+    const product = await this.findOne(id, { relations: ['stockMovements'] });
 
     if (!product) {
       throw new Error('Product not found');
     }
 
-    await this.remove(product);
+    await this.manager.transaction(async (transactionalEntityManager) => {
+      await transactionalEntityManager.delete(StockMovement, { productId: id });
+      await transactionalEntityManager.remove(product);
+    });
   }
 }
