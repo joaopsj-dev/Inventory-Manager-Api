@@ -6,7 +6,7 @@ import {
   CustomerFindOneDto,
   CustomerUpdateDto,
 } from '@/modules/customer/dto/customer.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, NotFoundException, UnprocessableEntityException } from '@nestjs/common';
 
 @Injectable()
 export class CustomerService {
@@ -40,7 +40,19 @@ export class CustomerService {
   }
 
   async create(customer: CustomerCreateDto): Promise<Customer> {
-    return await this.customerRepository.createCustomer(customer);
+    const existingCustomer = await this.customerRepository.findOne({
+          where: { contact: customer.contact },
+        });
+    
+        if (existingCustomer) {
+          throw new UnprocessableEntityException('User already exists');
+        }
+    
+        try {
+          return await this.customerRepository.createCustomer(customer);
+        } catch (error) {
+          throw new UnprocessableEntityException(error.message);
+        }
   }
 
   async update(id: string, customer: CustomerUpdateDto): Promise<Customer> {
@@ -50,7 +62,15 @@ export class CustomerService {
       throw new NotFoundException(`Customer with ID ${id} not found`);
     }
 
-    return await this.customerRepository.create(customer);
+    const existingCustomerWithContact = await this.customerRepository.findOne({
+      where: { contact: customer.contact },
+    });
+
+    if (existingCustomerWithContact && existingCustomerWithContact.id !== id) {
+      throw new UnprocessableEntityException('Contact already in use');
+    }
+
+    return await this.customerRepository.updateCustomer(id, customer);
   }
 
   async delete(id: string): Promise<void> {

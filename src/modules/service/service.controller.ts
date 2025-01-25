@@ -20,6 +20,7 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
+import { log } from 'console';
 
 @Controller('service')
 export class ServiceController {
@@ -45,6 +46,7 @@ export class ServiceController {
   @HttpCode(HttpStatus.CREATED)
   @Post()
   public async createService(@Body() serviceCreateDto: ServiceCreateDto) {
+    console.log(serviceCreateDto);
     return await this.serviceService.create(serviceCreateDto);
   }
 
@@ -64,7 +66,7 @@ export class ServiceController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Put(':id/finish')
+  @Put('finish/:id')
   public async finishService(@Param('id', ParseUUIDPipe) id: string) {
     return await this.serviceService.finishService(id);
   }

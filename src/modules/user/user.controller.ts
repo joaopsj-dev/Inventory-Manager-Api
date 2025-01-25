@@ -1,5 +1,5 @@
 import {
-  Body,
+  Body, 
   Controller,
   Delete,
   Get,
@@ -22,7 +22,7 @@ import {
   UserUpdateBodyDto,
 } from '@/modules/user/dto/user.dto';
 
-@Controller('users')
+@Controller('user')
 export class UserController {
   constructor(private userService: UserService) {}
 

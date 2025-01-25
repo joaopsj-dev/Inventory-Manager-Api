@@ -8,6 +8,7 @@ import { ServiceRepository } from '@/modules/service/service.repository';
 import { ServiceStatus } from '@/types/enums/service-status.enum';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
+import { log } from 'console';
 
 @Injectable()
 export class ServiceService {

@@ -43,9 +43,7 @@ export class UserCreateBodyDto {
 }
 
 export class UserUpdateBodyDto {
-  @IsOptional()
-  @IsUUID()
-  id!: string;
+  //TODO: não deixar o user mudar o id
 
   @IsOptional()
   @IsNotEmpty()

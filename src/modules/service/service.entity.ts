@@ -29,7 +29,7 @@ export class Service {
   defect: string;
 
   @Column('float')
-  Value: number;
+  value: number;
 
   @Column('float')
   remainingValue: number;
@@ -61,11 +61,17 @@ export class Service {
 
   @ManyToOne(() => Customer, (customer) => customer.services, {
     nullable: false,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'customerId' })
   customer: Customer;
 
-  @ManyToOne(() => User, (user) => user.services, { nullable: false })
+  @ManyToOne(() => User, (user) => user.services, {
+    nullable: false,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'userId' })
   user: User;
 }

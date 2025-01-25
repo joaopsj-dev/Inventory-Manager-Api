@@ -62,7 +62,7 @@ export class ServiceRepository extends Repository<Service> {
         userId: service.userId,
         device: service.device,
         defect: service.defect,
-        value: service.Value,
+        value: service.value,
         remainingValue: service.remainingValue,
         isPaid: service.isPaid,
         advanceValue: service.advanceValue,
