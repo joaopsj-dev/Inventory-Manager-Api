@@ -49,11 +49,13 @@ export class ServiceService {
   }
 
   async delete(id: string): Promise<void> {
-    const result = await this.serviceRepository.deleteService(id);
+    const existingService = await this.serviceRepository.findOne(id);
 
-    if (result.affected === 0) {
+    if (!existingService) {
       throw new NotFoundException(`Service with ID ${id} not found`);
     }
+
+    await this.serviceRepository.deleteService(id);
   }
 
   async finishService(id: string): Promise<Service> {
