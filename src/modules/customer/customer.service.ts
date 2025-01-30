@@ -74,10 +74,12 @@ export class CustomerService {
   }
 
   async delete(id: string): Promise<void> {
-    const result = await this.customerRepository.delete(id);
+    const existingCustomer = await this.customerRepository.findOne(id);
 
-    if (result.affected === 0) {
+    if (!existingCustomer) {
       throw new NotFoundException(`Customer with ID ${id} not found`);
     }
+
+    await this.customerRepository.delete(id);
   }
 }
