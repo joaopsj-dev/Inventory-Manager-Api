@@ -31,7 +31,7 @@ export class Service {
   @Column('float')
   value: number;
 
-  @Column('float')
+  @Column('float', { nullable: true })
   remainingValue: number;
 
   @Column('boolean', { default: false })
@@ -47,7 +47,7 @@ export class Service {
   })
   status: ServiceStatus;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp' })
   receivedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })

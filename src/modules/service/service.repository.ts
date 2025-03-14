@@ -7,50 +7,51 @@ import {
 } from '@/modules/service/dto/service.dto';
 import { Service } from '@/modules/service/service.entity';
 import { ServiceStatus } from '@/types/enums/service-status.enum';
+import { DateUtil } from '@/utils/date.util';
 
 @EntityRepository(Service)
 export class ServiceRepository extends Repository<Service> {
-  async createService(service: ServiceCreateDto): Promise<Service> {
-    const newService = this.create(service);
+  async createService({
+    receivedAt,
+    deliveryDate,
+    ...rest
+  }: ServiceCreateDto): Promise<Service> {
+    const newService = this.create({
+      ...rest,
+      receivedAt: DateUtil.adjustTimezone(receivedAt, 3).toISOString(),
+      deliveryDate: deliveryDate
+        ? DateUtil.adjustTimezone(deliveryDate, 3).toISOString()
+        : null,
+    });
     return await this.save(newService);
   }
 
-  async updateService(id: string, service: ServiceUpdateDto): Promise<Service> {
-    const updateService = this.create(service);
+  async updateService(
+    id: string,
+    { receivedAt, deliveryDate, ...rest }: ServiceUpdateDto,
+  ): Promise<Service> {
+    const updateService = this.create({
+      ...rest,
+      receivedAt: receivedAt
+        ? DateUtil.adjustTimezone(receivedAt, 3).toISOString()
+        : null,
+      deliveryDate: deliveryDate
+        ? DateUtil.adjustTimezone(deliveryDate, 3).toISOString()
+        : null,
+    });
     await this.save({ ...updateService, id });
     return await this.findOne(id);
   }
 
-  async findAllServices(
-    customer?: string,
-    contact?: string,
-    deviceName?: string,
-    serviceStatus?: ServiceStatus,
-  ): Promise<ServiceFindAllDto[]> {
+  async findAllServices(clientName?: string): Promise<ServiceFindAllDto[]> {
     const query = this.createQueryBuilder('service')
       .leftJoinAndSelect('service.customer', 'customer')
       .leftJoinAndSelect('service.user', 'user');
 
-    if (customer) {
-      query.andWhere('customer.name LIKE :customer', {
-        customer: `%${customer}%`,
+    if (clientName) {
+      query.andWhere('customer.name ILIKE :clientName', {
+        clientName: `%${clientName}%`,
       });
-    }
-
-    if (contact) {
-      query.andWhere('customer.contact LIKE :contact', {
-        contact: `%${contact}%`,
-      });
-    }
-
-    if (deviceName) {
-      query.andWhere('service.device LIKE :deviceName', {
-        deviceName: `%${deviceName}%`,
-      });
-    }
-
-    if (serviceStatus) {
-      query.andWhere('service.status = :serviceStatus', { serviceStatus });
     }
 
     const services = await query.getMany();
@@ -58,6 +59,7 @@ export class ServiceRepository extends Repository<Service> {
     return services.map((service) => {
       const serviceDto: ServiceFindAllDto = {
         id: service.id,
+        clientName: service.customer.name,
         customerId: service.customerId,
         userId: service.userId,
         device: service.device,

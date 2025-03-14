@@ -1,5 +1,14 @@
-import { IsString, IsNotEmpty, IsNumber, IsDate, IsEnum, IsOptional, IsDateString } from 'class-validator';
-import { Expose, Type } from 'class-transformer';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsDate,
+  IsEnum,
+  IsOptional,
+  IsDateString,
+  isUUID,
+} from 'class-validator';
+import { Expose, Transform, Type } from 'class-transformer';
 import { ServiceStatus } from '@/types/enums/service-status.enum';
 import { Optional } from '@nestjs/common';
 
@@ -53,7 +62,13 @@ export class ServiceCreateDto {
 
   @Expose()
   @IsNumber()
-  readonly remainingValue: number;
+  @IsOptional()
+  readonly advanceValue?: number;
+
+  @Expose()
+  @IsNumber()
+  @IsOptional()
+  readonly remainingValue?: number;
 
   @Expose()
   @IsEnum(ServiceStatus)
@@ -67,7 +82,8 @@ export class ServiceCreateDto {
   @Expose()
   @IsDate()
   @Type(() => Date)
-  readonly deliveryDate: Date;
+  @IsOptional()
+  readonly deliveryDate?: Date;
 }
 
 export class ServiceUpdateDto {
@@ -105,18 +121,21 @@ export class ServiceUpdateDto {
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  receivedAt?: string;
+  receivedAt?: Date;
 
   @Expose()
   @IsDate()
   @Type(() => Date)
   @IsOptional()
-  deliveryDate?: string;
+  deliveryDate?: Date;
 }
 
 export class ServiceFindAllDto {
   @Expose()
   readonly id: string;
+
+  @Expose()
+  readonly clientName: string;
 
   @Expose()
   readonly customerId: string;

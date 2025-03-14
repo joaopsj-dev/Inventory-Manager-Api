@@ -20,7 +20,6 @@ import {
   Query,
   UseGuards,
 } from '@nestjs/common';
-import { log } from 'console';
 
 @Controller('service')
 export class ServiceController {
@@ -30,23 +29,14 @@ export class ServiceController {
   @UseGuards(JwtAuthGuard)
   @Get()
   public async getAllServices(
-    @Query('customer') customer?: string,
-    @Query('contact') contact?: string,
-    @Query('deviceName') deviceName?: string,
-    @Query('serviceStatus') serviceStatus?: ServiceStatus,
+    @Query('clientName') clientName?: string,
   ): Promise<ServiceFindAllDto[]> {
-    return await this.serviceService.findAll(
-      customer,
-      contact,
-      deviceName,
-      serviceStatus,
-    );
+    return await this.serviceService.findAll(clientName);
   }
 
   @HttpCode(HttpStatus.CREATED)
   @Post()
   public async createService(@Body() serviceCreateDto: ServiceCreateDto) {
-    console.log(serviceCreateDto);
     return await this.serviceService.create(serviceCreateDto);
   }
 
