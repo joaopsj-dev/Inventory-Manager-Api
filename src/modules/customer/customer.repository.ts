@@ -1,18 +1,16 @@
 import { Customer } from '@/modules/customer/customer.entity';
 import {
+  CustomerBaseDto,
   CustomerCreateDto,
   CustomerFindAllDto,
-  CustomerFindOneDto,
   CustomerUpdateDto,
 } from '@/modules/customer/dto/customer.dto';
-import { ServiceStatus } from '@/types/enums/service-status.enum';
 import { DeleteResult, EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(Customer)
 export class CustomerRepository extends Repository<Customer> {
   async createCustomer(customer: CustomerCreateDto): Promise<Customer> {
     const newCustomer = await this.create(customer);
-
     return await this.save(newCustomer);
   }
 
@@ -27,22 +25,13 @@ export class CustomerRepository extends Repository<Customer> {
     return await this.findOne(id);
   }
 
-  async findAllWithServiceCount(
-    name?: string,
-    contact?: string,
-  ): Promise<CustomerFindAllDto[]> {
+  async findAllWithServiceCount(name?: string): Promise<CustomerFindAllDto[]> {
     const query = this.createQueryBuilder('customer')
       .leftJoinAndSelect('customer.services', 'service')
       .loadRelationCountAndMap('customer.serviceCount', 'customer.services');
 
     if (name) {
-      query.andWhere('customer.name LIKE :name', { name: `%${name}%` });
-    }
-
-    if (contact) {
-      query.andWhere('customer.contact LIKE :contact', {
-        contact: `%${contact}%`,
-      });
+      query.andWhere('customer.name ILIKE :name', { name: `%${name}%` });
     }
 
     const customers = await query.getMany();
@@ -61,32 +50,41 @@ export class CustomerRepository extends Repository<Customer> {
     });
   }
 
-  async findOneCustomer(
-    id: string,
-    device?: string,
-    status?: string,
-    defect?: string,
-  ): Promise<CustomerFindOneDto | undefined> {
-    const customer = await this.findOne(id);
+  async findByContact(contact: string): Promise<CustomerBaseDto | undefined> {
+    const customer = await this.findOne({ where: { contact } });
 
     if (!customer) {
-      throw new Error('Customer not found');
+      return undefined;
     }
 
-    const query = this.createQueryBuilder('customer')
-      .leftJoinAndSelect('customer.services', 'service')
-      .where('customer.id = :id', { id });
+    const customerDto: CustomerBaseDto = {
+      id: customer.id,
+      name: customer.name,
+      contact: customer.contact,
+      updatedAt: customer.updatedAt,
+      createdAt: customer.createdAt,
+    };
 
-    if (device) {
-      query.andWhere('service.device LIKE :device', { device: `%${device}%` });
+    return customerDto;
+  }
+
+  async findOneCustomer(
+    id?: string,
+    name?: string,
+    contact?: string,
+  ): Promise<CustomerBaseDto | undefined> {
+    if (!id && !name && !contact) {
+      return undefined;
     }
 
-    if (status) {
-      query.andWhere('service.status = :status', { status });
-    }
+    const query = this.createQueryBuilder('customer');
 
-    if (defect) {
-      query.andWhere('service.defect LIKE :defect', { defect: `%${defect}%` });
+    if (id) {
+      query.where('customer.id = :id', { id });
+    } else if (name) {
+      query.where('customer.name = :name', { name });
+    } else if (contact) {
+      query.where('customer.contact = :contact', { contact });
     }
 
     const result = await query.getOne();
@@ -95,22 +93,12 @@ export class CustomerRepository extends Repository<Customer> {
       return undefined;
     }
 
-    const completedCount = result.services.filter(
-      (service) => service.status === ServiceStatus.COMPLETED,
-    ).length;
-    const pendingCount = result.services.filter(
-      (service) => service.status === ServiceStatus.IN_PROGRES,
-    ).length;
-
-    const customerDto: CustomerFindOneDto = {
+    const customerDto: CustomerBaseDto = {
       id: result.id,
       name: result.name,
       contact: result.contact,
       updatedAt: result.updatedAt,
       createdAt: result.createdAt,
-      services: result.services,
-      completedCount,
-      pendingCount,
     };
 
     return customerDto;
