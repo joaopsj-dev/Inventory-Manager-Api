@@ -1,8 +1,9 @@
 import { CustomerService } from '@/modules/customer/customer.service';
 import {
   CustomerCreateDto,
-  CustomerQueryDto,
+  CustomerFindAllDto,
   CustomerUpdateDto,
+  GetUserDto,
 } from '@/modules/customer/dto/customer.dto';
 import {
   Body,
@@ -28,22 +29,22 @@ export class CustomerController {
   @HttpCode(HttpStatus.OK)
   @UseGuards(JwtAuthGuard)
   @Get()
-  public async getAllCustomers() {
-    return await this.customerService.findAll();
+  public async getAllCustomers(
+    @Query('name') name?: string,
+  ): Promise<CustomerFindAllDto[]> {
+    return await this.customerService.findAll(name);
   }
 
   @HttpCode(HttpStatus.OK)
-  @Get(':id')
-  public async getUser(
-    @Param('id', ParseUUIDPipe) id: string,
-    @Query() query: CustomerQueryDto,
-  ) {
-    return await this.customerService.findOne(
-      id,
-      query.defect,
-      query.device,
-      query.status,
-    );
+  @Get('/contact/:contact')
+  public async findByContact(@Param('contact') contact: string) {
+    return await this.customerService.findByContact(contact);
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @Get('/param')
+  public async getUser(@Query() query: GetUserDto) {
+    return await this.customerService.findOne(query);
   }
 
   @HttpCode(HttpStatus.OK)
