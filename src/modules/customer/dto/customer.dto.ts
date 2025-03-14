@@ -1,7 +1,13 @@
 import { Exclude, Expose, Type } from 'class-transformer';
 
 import { ServiceResponseDto } from '@/modules/service/dto/service.dto';
-import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsOptional,
+  IsString,
+  IsUUID,
+  MinLength,
+} from 'class-validator';
 
 @Exclude()
 export class CustomerBaseDto {
@@ -54,16 +60,18 @@ export class CustomerFindAllDto extends CustomerBaseDto {
   readonly servicesCount: number;
 }
 
-export class CustomerFindOneDto extends CustomerBaseDto {
-  @Expose()
-  @Type(() => ServiceResponseDto)
-  readonly services: ServiceResponseDto[];
+export class GetUserDto {
+  @IsOptional()
+  @IsUUID()
+  id?: string;
 
-  @Expose()
-  readonly completedCount: number;
+  @IsOptional()
+  @IsString()
+  name?: string;
 
-  @Expose()
-  readonly pendingCount: number;
+  @IsOptional()
+  @IsString()
+  contact?: string;
 }
 
 export class CustomerQueryDto {
