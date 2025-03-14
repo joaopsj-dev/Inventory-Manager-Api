@@ -29,9 +29,9 @@ export class Service {
   defect: string;
 
   @Column('float')
-  Value: number;
+  value: number;
 
-  @Column('float')
+  @Column('float', { nullable: true })
   remainingValue: number;
 
   @Column('boolean', { default: false })
@@ -47,7 +47,7 @@ export class Service {
   })
   status: ServiceStatus;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp' })
   receivedAt: Date;
 
   @Column({ type: 'timestamp', nullable: true })
@@ -61,11 +61,17 @@ export class Service {
 
   @ManyToOne(() => Customer, (customer) => customer.services, {
     nullable: false,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'customerId' })
   customer: Customer;
 
-  @ManyToOne(() => User, (user) => user.services, { nullable: false })
+  @ManyToOne(() => User, (user) => user.services, {
+    nullable: false,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
+  })
   @JoinColumn({ name: 'userId' })
   user: User;
 }

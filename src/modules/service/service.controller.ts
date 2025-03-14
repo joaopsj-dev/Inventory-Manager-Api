@@ -29,17 +29,9 @@ export class ServiceController {
   @UseGuards(JwtAuthGuard)
   @Get()
   public async getAllServices(
-    @Query('customer') customer?: string,
-    @Query('contact') contact?: string,
-    @Query('deviceName') deviceName?: string,
-    @Query('serviceStatus') serviceStatus?: ServiceStatus,
+    @Query('clientName') clientName?: string,
   ): Promise<ServiceFindAllDto[]> {
-    return await this.serviceService.findAll(
-      customer,
-      contact,
-      deviceName,
-      serviceStatus,
-    );
+    return await this.serviceService.findAll(clientName);
   }
 
   @HttpCode(HttpStatus.CREATED)
@@ -64,7 +56,7 @@ export class ServiceController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @Put(':id/finish')
+  @Put('finish/:id')
   public async finishService(@Param('id', ParseUUIDPipe) id: string) {
     return await this.serviceService.finishService(id);
   }

@@ -1,46 +1,64 @@
 import { Customer } from '@/modules/customer/customer.entity';
 import { CustomerRepository } from '@/modules/customer/customer.repository';
 import {
+  CustomerBaseDto,
   CustomerCreateDto,
   CustomerFindAllDto,
-  CustomerFindOneDto,
   CustomerUpdateDto,
+  GetUserDto,
 } from '@/modules/customer/dto/customer.dto';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 @Injectable()
 export class CustomerService {
   constructor(private customerRepository: CustomerRepository) {}
 
-  async findAll(
-    name?: string,
-    contact?: string,
-  ): Promise<CustomerFindAllDto[]> {
-    return this.customerRepository.findAllWithServiceCount(name, contact);
+  async findAll(name?: string): Promise<CustomerFindAllDto[]> {
+    return this.customerRepository.findAllWithServiceCount(name);
   }
 
-  async findOne(
-    id: string,
-    device?: string,
-    status?: string,
-    defect?: string,
-  ): Promise<CustomerFindOneDto> {
+  async findByContact(contact: string): Promise<CustomerBaseDto> {
+    const customer = await this.customerRepository.findByContact(contact);
+
+    if (!customer) {
+      throw new NotFoundException(`Customer with contact ${contact} not found`);
+    }
+
+    return customer;
+  }
+
+  async findOne({ id, name, contact }: GetUserDto): Promise<CustomerBaseDto> {
     const customer = await this.customerRepository.findOneCustomer(
       id,
-      device,
-      status,
-      defect,
+      name,
+      contact,
     );
 
     if (!customer) {
-      throw new NotFoundException(`Customer with ID ${id} not found`);
+      throw new NotFoundException(`Customer not found`);
     }
 
     return customer;
   }
 
   async create(customer: CustomerCreateDto): Promise<Customer> {
-    return await this.customerRepository.createCustomer(customer);
+    const existingCustomer = await this.customerRepository.findOne({
+      where: { contact: customer.contact },
+    });
+
+    if (existingCustomer) {
+      throw new UnprocessableEntityException('Contato já cadastrado');
+    }
+
+    try {
+      return await this.customerRepository.createCustomer(customer);
+    } catch (error) {
+      throw new UnprocessableEntityException(error.message);
+    }
   }
 
   async update(id: string, customer: CustomerUpdateDto): Promise<Customer> {
@@ -50,14 +68,24 @@ export class CustomerService {
       throw new NotFoundException(`Customer with ID ${id} not found`);
     }
 
-    return await this.customerRepository.create(customer);
+    const existingCustomerWithContact = await this.customerRepository.findOne({
+      where: { contact: customer.contact },
+    });
+
+    if (existingCustomerWithContact && existingCustomerWithContact.id !== id) {
+      throw new UnprocessableEntityException('Contato já cadastrado');
+    }
+
+    return await this.customerRepository.updateCustomer(id, customer);
   }
 
   async delete(id: string): Promise<void> {
-    const result = await this.customerRepository.delete(id);
+    const existingCustomer = await this.customerRepository.findOne(id);
 
-    if (result.affected === 0) {
+    if (!existingCustomer) {
       throw new NotFoundException(`Customer with ID ${id} not found`);
     }
+
+    await this.customerRepository.delete(id);
   }
 }

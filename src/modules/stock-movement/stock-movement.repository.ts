@@ -1,53 +1,35 @@
-import { ProductRepository } from '@/modules/product/product.repository';
 import {
   StockMovementCreateDto,
   StockMovementUpdateDto,
 } from '@/modules/stock-movement/dto/stock-movement.dto';
 import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
 import { StockMovementType } from '@/types/enums/stock-movement-type.enum';
+import { DateUtil } from '@/utils/date.util';
 import { EntityRepository, Repository } from 'typeorm';
 
 @EntityRepository(StockMovement)
 export class StockMovementRepository extends Repository<StockMovement> {
-  constructor(private productRepository: ProductRepository) {
-    super();
-  }
-
   async createStockMovement(
     stockMovement: StockMovementCreateDto,
   ): Promise<StockMovement> {
-    const product = await this.productRepository.findOne(
-      stockMovement.productId,
-    );
-
-    if (!product) {
-      throw new Error('Product not found');
-    }
-
-    if (product.quantity < stockMovement.quantity) {
-      throw new Error('Insufficient stock for the product');
-    }
-
-    product.quantity -= stockMovement.quantity;
-    await this.productRepository.save(product);
-
     const newStockMovement = this.create({
       ...stockMovement,
-      movementType: StockMovementType.EXIT,
-      negotiatedValue: stockMovement.price,
+      date: DateUtil.adjustTimezone(stockMovement.date, 3).toISOString(),
+      isFirstMovement: false,
     });
-
     return await this.save(newStockMovement);
   }
 
   async updateStockMovement(
     id: string,
-    stockMovement: StockMovementUpdateDto,
+    { date, ...rest }: StockMovementUpdateDto,
   ): Promise<StockMovement> {
+    date = (DateUtil.adjustTimezone(date, 3).toISOString() as unknown) as Date;
     const updateStockMovement = this.create({
-      ...stockMovement,
-      negotiatedValue: stockMovement.negotiatedValue,
+      date,
+      ...rest,
     });
+
     await this.save({ ...updateStockMovement, id });
     return await this.findOne(id);
   }
@@ -86,6 +68,7 @@ export class StockMovementRepository extends Repository<StockMovement> {
       service: stockMovement.service,
       serviceId: stockMovement.serviceId,
       negotiatedValue: stockMovement.negotiatedValue,
+      isFirstMovement: stockMovement.isFirstMovement,
     }));
   }
 

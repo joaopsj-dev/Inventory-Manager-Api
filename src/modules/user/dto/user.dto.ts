@@ -44,10 +44,6 @@ export class UserCreateBodyDto {
 
 export class UserUpdateBodyDto {
   @IsOptional()
-  @IsUUID()
-  id!: string;
-
-  @IsOptional()
   @IsNotEmpty()
   @IsString()
   username!: string;

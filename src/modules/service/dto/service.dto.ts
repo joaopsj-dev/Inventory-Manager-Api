@@ -1,5 +1,16 @@
-import { Expose } from 'class-transformer';
+import {
+  IsString,
+  IsNotEmpty,
+  IsNumber,
+  IsDate,
+  IsEnum,
+  IsOptional,
+  IsDateString,
+  isUUID,
+} from 'class-validator';
+import { Expose, Transform, Type } from 'class-transformer';
 import { ServiceStatus } from '@/types/enums/service-status.enum';
+import { Optional } from '@nestjs/common';
 
 export class ServiceResponseDto {
   @Expose()
@@ -23,61 +34,108 @@ export class ServiceResponseDto {
   @Expose()
   readonly updatedAt: Date;
 }
+
 export class ServiceCreateDto {
   @Expose()
+  @IsString()
+  @IsNotEmpty()
   readonly customerId: string;
 
   @Expose()
+  @IsString()
+  @IsNotEmpty()
   readonly userId: string;
 
   @Expose()
+  @IsString()
+  @IsNotEmpty()
   readonly device: string;
 
   @Expose()
+  @IsString()
+  @IsNotEmpty()
   readonly defect: string;
 
   @Expose()
+  @IsNumber()
   readonly value: number;
 
   @Expose()
-  readonly advanceValue: number;
+  @IsNumber()
+  @IsOptional()
+  readonly advanceValue?: number;
 
   @Expose()
+  @IsNumber()
+  @IsOptional()
+  readonly remainingValue?: number;
+
+  @Expose()
+  @IsEnum(ServiceStatus)
   readonly status: ServiceStatus;
 
   @Expose()
+  @IsDate()
+  @Type(() => Date)
   readonly receivedAt: Date;
 
   @Expose()
-  readonly deliveryDate: Date;
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  readonly deliveryDate?: Date;
 }
 
 export class ServiceUpdateDto {
   @Expose()
-  readonly device?: string;
+  @IsString()
+  @IsOptional()
+  device?: string;
 
   @Expose()
-  readonly defect?: string;
+  @IsString()
+  @IsOptional()
+  defect?: string;
 
   @Expose()
-  readonly value?: number;
+  @IsNumber()
+  @IsOptional()
+  value?: number;
 
   @Expose()
-  readonly advanceValue?: number;
+  @IsNumber()
+  @IsOptional()
+  advanceValue?: number;
 
   @Expose()
-  readonly status?: ServiceStatus;
+  @IsNumber()
+  @IsOptional()
+  remainingValue?: number;
 
   @Expose()
-  readonly receivedAt?: Date;
+  @IsEnum(ServiceStatus)
+  @IsOptional()
+  status?: ServiceStatus;
 
   @Expose()
-  readonly deliveryDate?: Date;
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  receivedAt?: Date;
+
+  @Expose()
+  @IsDate()
+  @Type(() => Date)
+  @IsOptional()
+  deliveryDate?: Date;
 }
 
 export class ServiceFindAllDto {
   @Expose()
   readonly id: string;
+
+  @Expose()
+  readonly clientName: string;
 
   @Expose()
   readonly customerId: string;
@@ -101,6 +159,7 @@ export class ServiceFindAllDto {
   readonly isPaid: boolean;
 
   @Expose()
+  @Optional()
   readonly advanceValue: number;
 
   @Expose()
