@@ -8,6 +8,7 @@ import {
   Injectable,
   NotFoundException,
   UnprocessableEntityException,
+  ConflictException,
 } from '@nestjs/common';
 
 @Injectable()
@@ -52,7 +53,7 @@ export class UserService {
     });
 
     if (existingEmail) {
-      throw new UnprocessableEntityException('User already exists');
+      throw new ConflictException('User already exists');
     }
 
     try {
