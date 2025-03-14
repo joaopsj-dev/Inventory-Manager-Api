@@ -33,7 +33,7 @@ export class Product {
   })
   unit: ProductUnit;
 
-  @Column()
+  @Column({ type: 'timestamp', nullable: true })
   purchaseDate: Date;
 
   @CreateDateColumn()

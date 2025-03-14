@@ -1,6 +1,7 @@
 import { ProductUnit } from '@/types/enums/product-unit-type.enum';
-import { Exclude, Expose } from 'class-transformer';
+import { Exclude, Expose, Type } from 'class-transformer';
 import {
+  IsDate,
   IsEnum,
   IsNotEmpty,
   IsNumber,
@@ -64,6 +65,8 @@ export class ProductCreateDto {
   unit: ProductUnit;
 
   @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
   purchaseDate: Date;
 }
 
@@ -93,6 +96,8 @@ export class ProductUpdateDto {
   unit?: ProductUnit;
 
   @IsOptional()
+  @IsDate()
+  @Type(() => Date)
   purchaseDate?: Date;
 }
 
@@ -120,5 +125,7 @@ export class IncrementProductStockDto {
   readonly price: number;
 
   @IsNotEmpty()
+  @IsDate()
+  @Type(() => Date)
   readonly purchaseDate: Date;
 }
