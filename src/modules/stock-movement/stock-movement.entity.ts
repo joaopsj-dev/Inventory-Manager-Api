@@ -14,7 +14,7 @@ export class StockMovement {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column()
+  @Column({ nullable: true })
   productId: string;
 
   @Column('int')
@@ -23,7 +23,7 @@ export class StockMovement {
   @Column({ type: 'enum', enum: StockMovementType })
   movementType: StockMovementType;
 
-  @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+  @Column({ type: 'timestamp' })
   date: Date;
 
   @Column({ nullable: true })
@@ -32,8 +32,12 @@ export class StockMovement {
   @Column('decimal', { precision: 10, scale: 2, nullable: true })
   negotiatedValue: number;
 
+  @Column('boolean')
+  isFirstMovement: boolean;
+
   @ManyToOne(() => Product, (product) => product.stockMovements, {
-    nullable: false,
+    nullable: true,
+    onDelete: 'SET NULL',
   })
   @JoinColumn({ name: 'productId' })
   product: Product;

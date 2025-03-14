@@ -1,5 +1,4 @@
-export type StockMovementType = keyof typeof StockMovementType;
-export const StockMovementType = {
-  ENTRY: 'ENTRY',
-  EXIT: 'EXIT',
-} as const;
+export enum StockMovementType {
+  ENTRY = 'ENTRY',
+  EXIT = 'EXIT',
+}

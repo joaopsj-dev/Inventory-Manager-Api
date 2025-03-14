@@ -1,6 +1,13 @@
 import { StockMovementType } from '@/types/enums/stock-movement-type.enum';
-import { Exclude, Expose } from 'class-transformer';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { Exclude, Expose, Type } from 'class-transformer';
+import {
+  IsBoolean,
+  IsDate,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 @Exclude()
 export class StockMovementBaseDto {
@@ -18,42 +25,61 @@ export class StockMovementBaseDto {
 
   @Expose()
   readonly negotiatedValue: number;
+
+  @Expose()
+  readonly date: Date;
+
+  @Expose()
+  readonly isFirstMovement: boolean;
 }
 
 export class StockMovementCreateDto {
-  @IsNotEmpty()
+  @Expose()
   @IsString()
   productId: string;
 
-  @IsNotEmpty()
+  @Expose()
   @IsNumber()
   quantity: number;
 
-  @IsNotEmpty()
+  @Expose()
   @IsNumber()
-  price: number;
+  negotiatedValue: number;
 
-  @IsNotEmpty()
+  @Expose()
+  @IsEnum(StockMovementType)
   movementType: StockMovementType;
+
+  @Expose()
+  @IsDate()
+  @Type(() => Date)
+  date: Date;
 }
 
 export class StockMovementUpdateDto {
+  @Expose()
   @IsOptional()
-  @IsNotEmpty()
   @IsString()
   productId?: string;
 
+  @Expose()
   @IsOptional()
-  @IsNotEmpty()
   @IsNumber()
   quantity?: number;
 
+  @Expose()
   @IsOptional()
+  @IsEnum(StockMovementType)
   movementType?: StockMovementType;
 
   @IsOptional()
   @IsNumber()
   negotiatedValue?: number;
+
+  @IsOptional()
+  @IsDate()
+  @Type(() => Date)
+  date?: Date;
 }
 
 export class StockMovementFindAllDto extends StockMovementBaseDto {

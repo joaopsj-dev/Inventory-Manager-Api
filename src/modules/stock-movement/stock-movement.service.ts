@@ -7,13 +7,20 @@ import {
 } from '@/modules/stock-movement/dto/stock-movement.dto';
 import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
 import { StockMovementRepository } from '@/modules/stock-movement/stock-movement.repository';
-import { StockMovementType } from '@/types/enums/stock-movement-type.enum';
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
+import {
+  Injectable,
+  NotFoundException,
+  UnprocessableEntityException,
+} from '@nestjs/common';
 
 @Injectable()
 export class StockMovementService {
   constructor(
+    @InjectRepository(StockMovementRepository)
     private stockMovementRepository: StockMovementRepository,
+
+    @InjectRepository(ProductRepository)
     private productRepository: ProductRepository,
   ) {}
 
@@ -26,20 +33,23 @@ export class StockMovementService {
       throw new NotFoundException('Product not found');
     }
 
-    if (product.quantity < stockMovement.quantity) {
-      throw new Error('Insufficient stock for the product');
+    if (
+      stockMovement.movementType === 'EXIT' &&
+      product.quantity < stockMovement.quantity
+    ) {
+      throw new UnprocessableEntityException(
+        'Insufficient stock for the product',
+      );
     }
 
-    product.quantity -= stockMovement.quantity;
+    if (stockMovement.movementType === 'ENTRY') {
+      product.quantity += stockMovement.quantity;
+    } else {
+      product.quantity -= stockMovement.quantity;
+    }
+
     await this.productRepository.save(product);
-
-    const newStockMovement = this.stockMovementRepository.create({
-      ...stockMovement,
-      movementType: StockMovementType.EXIT,
-      negotiatedValue: stockMovement.price,
-    });
-
-    return await this.stockMovementRepository.save(newStockMovement);
+    return this.stockMovementRepository.createStockMovement(stockMovement);
   }
 
   async findAll(
@@ -58,10 +68,12 @@ export class StockMovementService {
       quantity: stockMovement.quantity,
       movementType: stockMovement.movementType,
       date: stockMovement.date,
-      product: stockMovement.product,
-      service: stockMovement.service,
-      serviceId: stockMovement.serviceId,
-      negotiatedValue: stockMovement.negotiatedValue, // Adicionando a nova propriedade
+      product: {
+        id: stockMovement.product.id,
+        name: stockMovement.product.name,
+      },
+      negotiatedValue: stockMovement.negotiatedValue,
+      isFirstMovement: stockMovement.isFirstMovement,
     }));
   }
 
@@ -77,6 +89,43 @@ export class StockMovementService {
       throw new NotFoundException(`Stock movement with ID ${id} not found`);
     }
 
+    if (stockMovement.quantity !== existingStockMovement.quantity) {
+      const product = await this.productRepository.findOneProduct(
+        stockMovement.productId,
+      );
+
+      if (!product) {
+        throw new NotFoundException(
+          `Product with ID ${stockMovement.productId} not found`,
+        );
+      }
+
+      let adjustedQuantity: number;
+
+      if (stockMovement.movementType === 'ENTRY') {
+        adjustedQuantity =
+          product.quantity -
+          existingStockMovement.quantity +
+          stockMovement.quantity;
+      } else {
+        adjustedQuantity =
+          product.quantity +
+          existingStockMovement.quantity -
+          stockMovement.quantity;
+
+        if (adjustedQuantity < 0) {
+          throw new UnprocessableEntityException(
+            'Insufficient stock for the product',
+          );
+        }
+      }
+
+      await this.productRepository.updateProduct(product.id, {
+        ...product,
+        quantity: adjustedQuantity,
+      });
+    }
+
     return await this.stockMovementRepository.updateStockMovement(
       id,
       stockMovement,
@@ -89,6 +138,18 @@ export class StockMovementService {
     if (!stockMovement) {
       throw new NotFoundException(`Stock movement with ID ${id} not found`);
     }
+
+    const product = await this.productRepository.findOneProduct(
+      stockMovement.productId,
+    );
+    const adjustedQuantity =
+      stockMovement.movementType === 'ENTRY'
+        ? product.quantity - stockMovement.quantity
+        : product.quantity + stockMovement.quantity;
+    await this.productRepository.updateProduct(product.id, {
+      ...product,
+      quantity: adjustedQuantity,
+    });
 
     await this.stockMovementRepository.deleteStockMovement(id);
   }
