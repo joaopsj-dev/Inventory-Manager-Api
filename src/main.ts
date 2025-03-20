@@ -1,4 +1,5 @@
 import { AppModule } from '@/app.module';
+import { corsOptions } from '@/configs/cors.config';
 import { HttpStatus, ValidationPipe } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { NestFactory } from '@nestjs/core';
@@ -15,8 +16,6 @@ class Server {
       new FastifyAdapter(),
     );
 
-    const FRONTEND_URLS = process.env.FRONTEND_URLS?.split(',') || [];
-
     const configService = await nestFastifyApplication.get(ConfigService);
 
     nestFastifyApplication.useGlobalPipes(
@@ -28,10 +27,7 @@ class Server {
       }),
     );
 
-    nestFastifyApplication.enableCors({
-      origin: FRONTEND_URLS,
-      credentials: true,
-    });
+    nestFastifyApplication.enableCors(corsOptions);
 
     nestFastifyApplication.setGlobalPrefix('/api/v1');
 
