@@ -15,6 +15,8 @@ class Server {
       new FastifyAdapter(),
     );
 
+    const FRONTEND_URLS = process.env.FRONTEND_URLS?.split(',') || [];
+
     const configService = await nestFastifyApplication.get(ConfigService);
 
     nestFastifyApplication.useGlobalPipes(
@@ -27,7 +29,7 @@ class Server {
     );
 
     nestFastifyApplication.enableCors({
-      origin: ['http://localhost:3000'],
+      origin: FRONTEND_URLS,
       credentials: true,
     });
 
