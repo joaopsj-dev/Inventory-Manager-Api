@@ -8,11 +8,8 @@ export const corsOptions = {
     origin: string | undefined,
     callback: (error: Error | null, allow?: boolean) => void,
   ) {
-    console.log('CORS whitelist URLs:', whitelistUrls);
-    console.log('CORS origin:', origin);
     const normalizedOrigin =
       origin && origin.endsWith('/') ? origin.slice(0, -1) : origin;
-    console.log('Normalized CORS origin:', normalizedOrigin);
     if (whitelistUrls.indexOf(normalizedOrigin) !== -1 || !normalizedOrigin) {
       callback(null, true);
     } else {
