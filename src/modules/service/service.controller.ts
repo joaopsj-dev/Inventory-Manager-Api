@@ -2,11 +2,12 @@ import { JwtAuthGuard } from '@/guards/jwt-auth.guard';
 import {
   ServiceCreateDto,
   ServiceFindAllDto,
+  ServiceQueryDto,
   ServiceUpdateDto,
 } from '@/modules/service/dto/service.dto';
 import { ServiceService } from '@/modules/service/service.service';
-import { ServiceStatus } from '@/types/enums/service-status.enum';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -29,9 +30,17 @@ export class ServiceController {
   @UseGuards(JwtAuthGuard)
   @Get()
   public async getAllServices(
-    @Query('clientName') clientName?: string,
+    @Query() query: ServiceQueryDto,
   ): Promise<ServiceFindAllDto[]> {
-    return await this.serviceService.findAll(clientName);
+    if (
+      (query.firstDate && !query.lastDate) ||
+      (!query.firstDate && query.lastDate)
+    ) {
+      throw new BadRequestException(
+        'Ambos firstDate e lastDate devem ser passados juntos.',
+      );
+    }
+    return await this.serviceService.findAll(query);
   }
 
   @HttpCode(HttpStatus.CREATED)

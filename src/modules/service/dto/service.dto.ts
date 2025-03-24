@@ -6,10 +6,12 @@ import {
   IsEnum,
   IsOptional,
   IsDateString,
-  isUUID,
 } from 'class-validator';
-import { Expose, Transform, Type } from 'class-transformer';
-import { ServiceStatus } from '@/types/enums/service-status.enum';
+import { Expose, Type } from 'class-transformer';
+import {
+  PaymentStatus,
+  ServiceStatus,
+} from '@/types/enums/service-status.enum';
 import { Optional } from '@nestjs/common';
 
 export class ServiceResponseDto {
@@ -66,9 +68,8 @@ export class ServiceCreateDto {
   readonly advanceValue?: number;
 
   @Expose()
-  @IsNumber()
-  @IsOptional()
-  readonly remainingValue?: number;
+  @IsEnum(PaymentStatus)
+  readonly paymentStatus: PaymentStatus;
 
   @Expose()
   @IsEnum(ServiceStatus)
@@ -108,9 +109,9 @@ export class ServiceUpdateDto {
   advanceValue?: number;
 
   @Expose()
-  @IsNumber()
+  @IsEnum(PaymentStatus)
   @IsOptional()
-  remainingValue?: number;
+  paymentStatus?: PaymentStatus;
 
   @Expose()
   @IsEnum(ServiceStatus)
@@ -153,14 +154,14 @@ export class ServiceFindAllDto {
   readonly value: number;
 
   @Expose()
-  readonly remainingValue: number;
-
-  @Expose()
   readonly isPaid: boolean;
 
   @Expose()
   @Optional()
   readonly advanceValue: number;
+
+  @Expose()
+  readonly paymentStatus: PaymentStatus;
 
   @Expose()
   readonly status: ServiceStatus;
@@ -182,4 +183,18 @@ export class ServiceFindAllDto {
 
   @Expose()
   readonly user: any;
+}
+
+export class ServiceQueryDto {
+  @IsOptional()
+  @IsString()
+  clientName?: string;
+
+  @IsDateString({}, { message: 'Invalid date format. Use YYYY-MM-DD.' })
+  @IsOptional()
+  firstDate?: string;
+
+  @IsDateString({}, { message: 'Invalid date format. Use YYYY-MM-DD.' })
+  @IsOptional()
+  lastDate?: string;
 }

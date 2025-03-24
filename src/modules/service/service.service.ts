@@ -1,6 +1,7 @@
 import {
   ServiceCreateDto,
   ServiceFindAllDto,
+  ServiceQueryDto,
   ServiceUpdateDto,
 } from '@/modules/service/dto/service.dto';
 import { Service } from '@/modules/service/service.entity';
@@ -27,7 +28,16 @@ export class ServiceService {
       throw new NotFoundException('Customer not found');
     }
 
-    return await this.serviceRepository.createService(serviceCreateDto);
+    const service: ServiceCreateDto & { isPaid: boolean } = {
+      ...serviceCreateDto,
+      isPaid: serviceCreateDto.paymentStatus === 'TOTAL',
+      advanceValue:
+        serviceCreateDto.paymentStatus === 'TOTAL'
+          ? serviceCreateDto.value
+          : serviceCreateDto.advanceValue,
+    };
+
+    return await this.serviceRepository.createService(service);
   }
 
   async update(
@@ -40,11 +50,28 @@ export class ServiceService {
       throw new NotFoundException(`Service with ID ${id} not found`);
     }
 
-    return await this.serviceRepository.updateService(id, serviceUpdateDto);
+    const service: ServiceUpdateDto & { isPaid: boolean } = {
+      ...serviceUpdateDto,
+      isPaid: serviceUpdateDto.paymentStatus === 'TOTAL',
+      advanceValue:
+        serviceUpdateDto.paymentStatus === 'TOTAL'
+          ? serviceUpdateDto.value
+          : serviceUpdateDto.advanceValue,
+    };
+
+    return await this.serviceRepository.updateService(id, service);
   }
 
-  async findAll(clientName?: string): Promise<ServiceFindAllDto[]> {
-    return await this.serviceRepository.findAllServices(clientName);
+  async findAll({
+    clientName,
+    firstDate,
+    lastDate,
+  }: ServiceQueryDto): Promise<ServiceFindAllDto[]> {
+    return await this.serviceRepository.findAllServices(
+      clientName,
+      firstDate,
+      lastDate,
+    );
   }
 
   async delete(id: string): Promise<void> {

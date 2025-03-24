@@ -1,6 +1,9 @@
 import { Customer } from '@/modules/customer/customer.entity';
 import { User } from '@/modules/user/user.entity';
-import { ServiceStatus } from '@/types/enums/service-status.enum';
+import {
+  PaymentStatus,
+  ServiceStatus,
+} from '@/types/enums/service-status.enum';
 import {
   Column,
   CreateDateColumn,
@@ -31,14 +34,18 @@ export class Service {
   @Column('float')
   value: number;
 
-  @Column('float', { nullable: true })
-  remainingValue: number;
-
   @Column('boolean', { default: false })
   isPaid: boolean;
 
   @Column('float', { nullable: true })
   advanceValue: number;
+
+  @Column({
+    type: 'enum',
+    enum: PaymentStatus,
+    default: PaymentStatus.PARTIAL,
+  })
+  paymentStatus: PaymentStatus;
 
   @Column({
     type: 'enum',

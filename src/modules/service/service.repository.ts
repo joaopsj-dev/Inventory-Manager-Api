@@ -14,10 +14,12 @@ export class ServiceRepository extends Repository<Service> {
   async createService({
     receivedAt,
     deliveryDate,
+    isPaid,
     ...rest
-  }: ServiceCreateDto): Promise<Service> {
+  }: ServiceCreateDto & { isPaid: boolean }): Promise<Service> {
     const newService = this.create({
       ...rest,
+      isPaid,
       receivedAt: DateUtil.adjustTimezone(receivedAt, 3).toISOString(),
       deliveryDate: deliveryDate
         ? DateUtil.adjustTimezone(deliveryDate, 3).toISOString()
@@ -28,7 +30,11 @@ export class ServiceRepository extends Repository<Service> {
 
   async updateService(
     id: string,
-    { receivedAt, deliveryDate, ...rest }: ServiceUpdateDto,
+    {
+      receivedAt,
+      deliveryDate,
+      ...rest
+    }: ServiceUpdateDto & { isPaid: boolean },
   ): Promise<Service> {
     const updateService = this.create({
       ...rest,
@@ -43,7 +49,11 @@ export class ServiceRepository extends Repository<Service> {
     return await this.findOne(id);
   }
 
-  async findAllServices(clientName?: string): Promise<ServiceFindAllDto[]> {
+  async findAllServices(
+    clientName?: string,
+    firstDate?: Date | string,
+    lastDate?: Date | string,
+  ): Promise<ServiceFindAllDto[]> {
     const query = this.createQueryBuilder('service')
       .leftJoinAndSelect('service.customer', 'customer')
       .leftJoinAndSelect('service.user', 'user');
@@ -51,6 +61,13 @@ export class ServiceRepository extends Repository<Service> {
     if (clientName) {
       query.andWhere('customer.name ILIKE :clientName', {
         clientName: `%${clientName}%`,
+      });
+    }
+
+    if (firstDate && lastDate) {
+      query.andWhere('stockMovement.date BETWEEN :firstDate AND :lastDate', {
+        firstDate: firstDate,
+        lastDate: lastDate,
       });
     }
 
@@ -65,7 +82,7 @@ export class ServiceRepository extends Repository<Service> {
         device: service.device,
         defect: service.defect,
         value: service.value,
-        remainingValue: service.remainingValue,
+        paymentStatus: service.paymentStatus,
         isPaid: service.isPaid,
         advanceValue: service.advanceValue,
         status: service.status,
@@ -101,7 +118,7 @@ export class ServiceRepository extends Repository<Service> {
       throw new Error('Service not found');
     }
 
-    service.remainingValue = 0;
+    service.advanceValue = service.value;
     service.isPaid = true;
     service.status = ServiceStatus.COMPLETED;
 
