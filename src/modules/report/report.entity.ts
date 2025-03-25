@@ -9,8 +9,20 @@ export class Report {
   @Column({ type: 'enum', enum: ReportType })
   type: ReportType;
 
-  @Column('json')
-  data: any;
+  @Column({ type: 'timestamp' })
+  firstDate: Date;
+
+  @Column({ type: 'timestamp' })
+  lastDate: Date;
+
+  @Column('float')
+  totalEntry: number;
+
+  @Column('float')
+  totalExit: number;
+
+  @Column('float')
+  finalBalance: number;
 
   @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
   generatedAt: Date;
