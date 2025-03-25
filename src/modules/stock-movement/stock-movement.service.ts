@@ -52,13 +52,17 @@ export class StockMovementService {
     return this.stockMovementRepository.createStockMovement(stockMovement);
   }
 
-  async findAll(
-    query: StockMovementQueryDto,
-  ): Promise<StockMovementFindAllDto[]> {
-    const { productName, movementType } = query;
+  async findAll({
+    productName,
+    movementType,
+    firstDate,
+    lastDate,
+  }: StockMovementQueryDto): Promise<StockMovementFindAllDto[]> {
     const stockMovements = await this.stockMovementRepository.findAllStockMovements(
       productName,
       movementType,
+      firstDate,
+      lastDate,
     );
 
     return stockMovements.map((stockMovement) => ({

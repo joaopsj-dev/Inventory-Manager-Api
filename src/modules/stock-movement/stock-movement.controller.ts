@@ -7,6 +7,7 @@ import {
 import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
 import { StockMovementService } from '@/modules/stock-movement/stock-movement.service';
 import {
+  BadRequestException,
   Body,
   Controller,
   Delete,
@@ -27,6 +28,14 @@ export class StockMovementController {
   async findAll(
     @Query() query: StockMovementQueryDto,
   ): Promise<StockMovementFindAllDto[]> {
+    if (
+      (query.firstDate && !query.lastDate) ||
+      (!query.firstDate && query.lastDate)
+    ) {
+      throw new BadRequestException(
+        'Ambos firstDate e lastDate devem ser passados juntos.',
+      );
+    }
     return this.stockMovementService.findAll(query);
   }
 
