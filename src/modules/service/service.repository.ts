@@ -53,6 +53,7 @@ export class ServiceRepository extends Repository<Service> {
     clientName?: string,
     firstDate?: Date | string,
     lastDate?: Date | string,
+    isPaid?: boolean,
   ): Promise<ServiceFindAllDto[]> {
     const query = this.createQueryBuilder('service')
       .leftJoinAndSelect('service.customer', 'customer')
@@ -65,10 +66,14 @@ export class ServiceRepository extends Repository<Service> {
     }
 
     if (firstDate && lastDate) {
-      query.andWhere('stockMovement.date BETWEEN :firstDate AND :lastDate', {
+      query.andWhere('service.receivedAt BETWEEN :firstDate AND :lastDate', {
         firstDate: firstDate,
         lastDate: lastDate,
       });
+    }
+
+    if (isPaid) {
+      query.andWhere('service.isPaid = :isPaid', { isPaid });
     }
 
     const services = await query.getMany();
