@@ -29,7 +29,7 @@ export class StockMovement {
   @Column({ nullable: true })
   serviceId: string;
 
-  @Column('decimal', { precision: 10, scale: 2, nullable: true })
+  @Column('float')
   negotiatedValue: number;
 
   @Column('boolean')
