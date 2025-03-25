@@ -1,7 +1,7 @@
 import { Report } from '@/modules/report/report.entity';
-import { StockMovement } from '@/modules/stock-movement/stock-movement.entity';
 import { ReportType } from '@/types/enums/report-type.enum';
 import { EntityRepository, Repository } from 'typeorm';
+import { CreateReporterDTO } from './dto/report.dto';
 
 @EntityRepository(Report)
 export class ReportRepository extends Repository<Report> {
@@ -34,34 +34,9 @@ export class ReportRepository extends Repository<Report> {
     return await query.getMany();
   }
 
-  async generateSalesReport(
-    startDate: Date,
-    endDate: Date,
-    type: ReportType,
-  ): Promise<Report> {
-    const stockMovements = await this.manager
-      .getRepository(StockMovement)
-      .createQueryBuilder('stockMovement')
-      .leftJoinAndSelect('stockMovement.product', 'product')
-      .leftJoinAndSelect('stockMovement.service', 'service')
-      .where('stockMovement.date >= :startDate', { startDate })
-      .andWhere('stockMovement.date <= :endDate', { endDate })
-      .getMany();
-
-    const reportData = stockMovements.map((movement) => ({
-      id: movement.id,
-      productId: movement.product?.id,
-      productName: movement.product?.name,
-      serviceId: movement.service?.id,
-      serviceName: movement.service?.device,
-      quantity: movement.quantity,
-      movementType: movement.movementType,
-      date: movement.date,
-    }));
-
+  async generateSalesReport(reportData: CreateReporterDTO): Promise<Report> {
     const report = this.create({
-      type,
-      data: reportData,
+      ...reportData,
       generatedAt: new Date(),
     });
 
