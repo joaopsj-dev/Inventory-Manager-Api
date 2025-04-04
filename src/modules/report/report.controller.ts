@@ -20,13 +20,8 @@ export class ReportController {
   constructor(private readonly reportService: ReportService) {}
 
   @Get()
-  async findReports(
-    @Query('title') title?: string,
-    @Query('type') type?: ReportType,
-    @Query('startDate') startDate?: Date,
-    @Query('endDate') endDate?: Date,
-  ): Promise<Report[]> {
-    return this.reportService.findReports(title, type, startDate, endDate);
+  async findReports(): Promise<Report[]> {
+    return this.reportService.findReports();
   }
 
   @Post('generate-sales-report')

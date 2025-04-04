@@ -20,18 +20,8 @@ export class ReportService {
     private serviceRepository: ServiceRepository,
   ) {}
 
-  async findReports(
-    title?: string,
-    type?: ReportType,
-    startDate?: Date,
-    endDate?: Date,
-  ): Promise<Report[]> {
-    return await this.reportRepository.findReports(
-      title,
-      type,
-      startDate,
-      endDate,
-    );
+  async findReports(): Promise<Report[]> {
+    return await this.reportRepository.findReports();
   }
 
   async generateSalesReport({

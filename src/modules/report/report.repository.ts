@@ -5,32 +5,8 @@ import { CreateReporterDTO } from './dto/report.dto';
 
 @EntityRepository(Report)
 export class ReportRepository extends Repository<Report> {
-  async findReports(
-    title?: string,
-    type?: ReportType,
-    startDate?: Date,
-    endDate?: Date,
-  ): Promise<Report[]> {
+  async findReports(): Promise<Report[]> {
     const query = this.createQueryBuilder('report');
-
-    if (title) {
-      query.andWhere('report.title LIKE :title', {
-        title: `%${title}%`,
-      });
-    }
-
-    if (type) {
-      query.andWhere('report.type = :type', { type });
-    }
-
-    if (startDate) {
-      query.andWhere('report.generatedAt >= :startDate', { startDate });
-    }
-
-    if (endDate) {
-      query.andWhere('report.generatedAt <= :endDate', { endDate });
-    }
-
     return await query.getMany();
   }
 
