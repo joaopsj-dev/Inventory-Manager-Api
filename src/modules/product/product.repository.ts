@@ -44,7 +44,11 @@ export class ProductRepository extends Repository<Product> {
       purchaseDate,
       3,
     ).toISOString() as unknown) as Date;
-    const newProduct = this.create({ purchaseDate, ...restProduct });
+    const newProduct = this.create({
+      purchaseDate,
+      price: restProduct.price / restProduct.quantity,
+      ...restProduct,
+    });
     const savedProduct = await this.save(newProduct);
 
     const stockMovement = new StockMovement();
