@@ -1,11 +1,11 @@
 import { Report } from '@/modules/report/report.entity';
 import { ReportRepository } from '@/modules/report/report.repository';
-import { ReportType } from '@/types/enums/report-type.enum';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { GenerateSalesReportDTO, ReportInterface } from './dto/report.dto';
 import { StockMovementRepository } from '../stock-movement/stock-movement.repository';
 import { ServiceRepository } from '../service/service.repository';
+import { ProductRepository } from '../product/product.repository';
 
 @Injectable()
 export class ReportService {
@@ -18,6 +18,9 @@ export class ReportService {
 
     @InjectRepository(ServiceRepository)
     private serviceRepository: ServiceRepository,
+
+    @InjectRepository(ProductRepository)
+    private productRepository: ProductRepository,
   ) {}
 
   async findReports(): Promise<Report[]> {
@@ -32,6 +35,9 @@ export class ReportService {
     productsIds,
   }: GenerateSalesReportDTO): Promise<Report> {
     let totalExit = 0;
+    let totalEntry = 0;
+    console.log(firstDate, lastDate);
+
     if (type === 'PRODUCT') {
       const stockMovements = await this.stockMovementRepository.findAllStockMovements(
         null,
@@ -41,38 +47,17 @@ export class ReportService {
         productsIds,
       );
 
-      let totalEntry = 0;
-      const productCosts: Record<
-        string,
-        { totalCost: number; totalQuantity: number }
-      > = {};
-
-      stockMovements.forEach((movement) => {
-        if (movement.movementType === 'ENTRY') {
-          if (!productCosts[movement.productId]) {
-            productCosts[movement.productId] = {
-              totalCost: 0,
-              totalQuantity: 0,
-            };
-          }
-          productCosts[movement.productId].totalCost +=
-            movement.negotiatedValue;
-          productCosts[movement.productId].totalQuantity += movement.quantity;
-        }
-      });
-
-      stockMovements.forEach((movement) => {
+      for (const movement of stockMovements) {
         if (movement.movementType === 'EXIT') {
           totalExit += movement.negotiatedValue;
-          const productCost = productCosts[movement.productId];
 
-          if (productCost && productCost.totalQuantity > 0) {
-            const costPerUnit =
-              productCost.totalCost / productCost.totalQuantity;
-            totalEntry += costPerUnit * movement.quantity;
-          }
+          const product = await this.productRepository.findOne(
+            movement.productId,
+          );
+          const costPerUnit = product.price;
+          totalEntry += costPerUnit * movement.quantity;
         }
-      });
+      }
 
       return await this.reportRepository.generateSalesReport({
         type,
@@ -83,6 +68,7 @@ export class ReportService {
         finalBalance: totalExit - totalEntry,
       });
     }
+
     const services = await this.serviceRepository.findAllServices(
       null,
       firstDate,

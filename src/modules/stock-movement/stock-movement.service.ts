@@ -13,6 +13,7 @@ import {
   NotFoundException,
   UnprocessableEntityException,
 } from '@nestjs/common';
+import e from 'express';
 
 @Injectable()
 export class StockMovementService {
@@ -43,7 +44,19 @@ export class StockMovementService {
     }
 
     if (stockMovement.movementType === 'ENTRY') {
-      product.quantity += stockMovement.quantity;
+      const currentStock = product.quantity;
+      const currentPrice = product.price;
+
+      const newQuantity = stockMovement.quantity;
+      const newUnitCost = stockMovement.negotiatedValue / newQuantity;
+
+      const totalCost = currentStock * currentPrice + newQuantity * newUnitCost;
+      const totalQuantity = currentStock + newQuantity;
+
+      const newAveragePrice = totalCost / totalQuantity;
+
+      product.quantity = totalQuantity;
+      product.price = newAveragePrice;
     } else {
       product.quantity -= stockMovement.quantity;
     }
@@ -93,39 +106,47 @@ export class StockMovementService {
       throw new NotFoundException(`Stock movement with ID ${id} not found`);
     }
 
-    if (stockMovement.quantity !== existingStockMovement.quantity) {
-      const product = await this.productRepository.findOneProduct(
-        stockMovement.productId,
-      );
+    const product = await this.productRepository.findOneProduct(
+      existingStockMovement.productId,
+    );
 
-      if (!product) {
-        throw new NotFoundException(
-          `Product with ID ${stockMovement.productId} not found`,
+    if (existingStockMovement.movementType === 'ENTRY') {
+      // Preço unitario medio da movimentação antiga
+      const oldUnitCost =
+        existingStockMovement.negotiatedValue / existingStockMovement.quantity;
+
+      // Corrige a quantidade em estoque do produto (sem a movimentação antiga)
+      const baseQuantity = product.quantity - existingStockMovement.quantity;
+
+      // Corrige o custo total do estoque (sem a movimentação antiga)
+      const originalTotalCost =
+        product.price * product.quantity -
+        oldUnitCost * existingStockMovement.quantity;
+
+      const newTotalQuantity = baseQuantity + stockMovement.quantity;
+
+      const newTotalCost = originalTotalCost + stockMovement.negotiatedValue;
+
+      const newAveragePrice =
+        newTotalQuantity > 0 ? newTotalCost / newTotalQuantity : 0;
+
+      await this.productRepository.updateProduct(product.id, {
+        quantity: newTotalQuantity,
+        price: newAveragePrice,
+      });
+    } else {
+      const adjustedQuantity =
+        product.quantity +
+        existingStockMovement.quantity -
+        stockMovement.quantity;
+
+      if (adjustedQuantity < 0) {
+        throw new UnprocessableEntityException(
+          'Insufficient stock for the product',
         );
       }
 
-      let adjustedQuantity: number;
-
-      if (stockMovement.movementType === 'ENTRY') {
-        adjustedQuantity =
-          product.quantity -
-          existingStockMovement.quantity +
-          stockMovement.quantity;
-      } else {
-        adjustedQuantity =
-          product.quantity +
-          existingStockMovement.quantity -
-          stockMovement.quantity;
-
-        if (adjustedQuantity < 0) {
-          throw new UnprocessableEntityException(
-            'Insufficient stock for the product',
-          );
-        }
-      }
-
       await this.productRepository.updateProduct(product.id, {
-        ...product,
         quantity: adjustedQuantity,
       });
     }

@@ -24,10 +24,10 @@ export class StockMovementRepository extends Repository<StockMovement> {
     id: string,
     { date, ...rest }: StockMovementUpdateDto,
   ): Promise<StockMovement> {
-    date = (DateUtil.adjustTimezone(date, 3).toISOString() as unknown) as Date;
+    console.log(date);
     const updateStockMovement = this.create({
-      date,
       ...rest,
+      date: DateUtil.adjustTimezone(date, 3).toISOString(),
     });
 
     await this.save({ ...updateStockMovement, id });

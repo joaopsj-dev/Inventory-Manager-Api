@@ -5,6 +5,7 @@ import { Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { StockMovementRepository } from '../stock-movement/stock-movement.repository';
 import { ServiceRepository } from '../service/service.repository';
+import { ProductRepository } from '../product/product.repository';
 
 @Module({
   imports: [
@@ -12,6 +13,7 @@ import { ServiceRepository } from '../service/service.repository';
       ReportRepository,
       StockMovementRepository,
       ServiceRepository,
+      ProductRepository,
     ]),
   ],
   providers: [ReportService],

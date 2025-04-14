@@ -60,18 +60,8 @@ export class StockMovementCreateDto {
 export class StockMovementUpdateDto {
   @Expose()
   @IsOptional()
-  @IsString()
-  productId?: string;
-
-  @Expose()
-  @IsOptional()
   @IsNumber()
   quantity?: number;
-
-  @Expose()
-  @IsOptional()
-  @IsEnum(StockMovementType)
-  movementType?: StockMovementType;
 
   @IsOptional()
   @IsNumber()
